@@ -1,3 +1,5 @@
+"""Vehicle Routing Problem (VRP) Solver."""
+
 import argparse
 import math
 import numpy as np
@@ -92,6 +94,12 @@ class Solver():
                 driver += 1
             self.routes[driver].append(load)
 
+    def get_schedules(self):
+        schedules = []
+        for route in self.routes.items():
+            schedules.append([load.id for load in route[1]])
+        return schedules
+
     def print_routes(self):
         for route in self.routes.items():
             print([int(load.id) for load in route[1]])
@@ -103,6 +111,6 @@ if __name__ == '__main__':
     args=parser.parse_args()
 
     vrp = Solver(args.inputPath)
-    vrp.get_brute_force_routes()
+    vrp.get_brute_force_routes(seed=4) # Only optimial for demo.txt
     # Print to stdout
     vrp.print_routes()

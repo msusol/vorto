@@ -45,9 +45,9 @@ in Rural Areas](https://scholarspace.manoa.hawaii.edu/server/api/core/bitstreams
 $ python3 evaluateShared.py --cmd "python3 vrp.py --inputPath" --problemDir "TrainingProblems"
 ```
 
-| Approach                        | mean cost        | mean run time        |
-|---------------------------------|------------------|----------------------|
-| get_brute_force_routes(seed=42) | 89996.4479968427 | 122.00418710708618ms |
+| Approach                       | mean cost         | mean run time       |
+|--------------------------------|-------------------|---------------------|
+| get_brute_force_routes(seed=4) | 89750.38813192869 | 119.0253734588623ms |
 
 ### Demo
 
@@ -63,9 +63,11 @@ loadNumber pickup dropoff
 4 (5.3,-61.1) (77.8,-5.4)
 ```
 
+The minimum cost for the demo: `1856.364923582228`
+
 ```shell
 $ python3 vrp.py --inputPath "TestingProblems/demo.txt"
 
-[2, 3, 4]
-[1]
+[3, 1, 4]
+[2]
 ```
