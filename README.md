@@ -45,9 +45,11 @@ in Rural Areas](https://scholarspace.manoa.hawaii.edu/server/api/core/bitstreams
 $ python3 evaluateShared.py --cmd "python3 vrp.py --inputPath" --problemDir "TrainingProblems"
 ```
 
-| Approach                       | mean cost         | mean run time       |
-|--------------------------------|-------------------|---------------------|
-| get_brute_force_routes(seed=4) | 89750.38813192869 | 119.0253734588623ms |
+| Approach                       | mean cost          | mean run time        |
+|--------------------------------|--------------------|----------------------|
+| get_brute_force_routes()       | 89996.4479968427   | 122.00418710708618ms |
+| get_brute_force_routes(seed=4) | 89750.38813192869  | 119.0253734588623ms  |
+| get_nearest_routes()           |                    |                      |
 
 ### Demo
 
@@ -71,3 +73,8 @@ $ python3 vrp.py --inputPath "TestingProblems/demo.txt"
 [3, 1, 4]
 [2]
 ```
+
+### Nearest Neighbor Heuristic
+
+TODO: Break from the manual brute force method, and load out the schedule by
+selecting the Nth nearest neighbor (load).

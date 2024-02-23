@@ -94,6 +94,10 @@ class Solver():
                 driver += 1
             self.routes[driver].append(load)
 
+    # TODO: Working through the algorithm for this approach.
+    def get_nearest_routes(self):
+        pass
+
     def get_schedules(self):
         schedules = []
         for route in self.routes.items():
@@ -111,6 +115,6 @@ if __name__ == '__main__':
     args=parser.parse_args()
 
     vrp = Solver(args.inputPath)
-    vrp.get_brute_force_routes(seed=4) # Only optimial for demo.txt
+    vrp.get_brute_force_routes(seed=4) # Only optimal for demo.txt
     # Print to stdout
     vrp.print_routes()
