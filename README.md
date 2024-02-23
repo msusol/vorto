@@ -45,9 +45,9 @@ in Rural Areas](https://scholarspace.manoa.hawaii.edu/server/api/core/bitstreams
 $ python3 evaluateShared.py --cmd "python3 vrp.py --inputPath" --problemDir "TrainingProblems"
 ```
 
-| Approach               | mean cost           | mean run time         |
-|------------------------|---------------------|-----------------------|
-| get_brute_force_routes | 90138.6429881012    | 103.60167026519775ms  |
+| Approach                        | mean cost        | mean run time        |
+|---------------------------------|------------------|----------------------|
+| get_brute_force_routes(seed=42) | 89996.4479968427 | 122.00418710708618ms |
 
 ### Demo
 
@@ -66,6 +66,6 @@ loadNumber pickup dropoff
 ```shell
 $ python3 vrp.py --inputPath "TestingProblems/demo.txt"
 
-[1, 2]
-[3, 4]
+[2, 3, 4]
+[1]
 ```

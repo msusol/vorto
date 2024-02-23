@@ -159,7 +159,7 @@ if __name__ == '__main__':
         inputPath = args.problemDir + "/" + inputFile
         #run commands on input path
         cmd = args.cmd.split()
-        cmd.append(inputPath) # make FLAG for vrp.py
+        cmd.append(inputPath)
         start_time = time.time()
         output = subprocess.check_output(cmd).decode("utf-8")
         sumRunTime += time.time() - start_time

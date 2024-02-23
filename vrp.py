@@ -1,6 +1,7 @@
 import argparse
 import math
 import numpy as np
+import random
 from collections import defaultdict
 from typing import List
 
@@ -14,27 +15,24 @@ class Solver():
         self.inputPath = inputPath
         self.routes = defaultdict(list)
         self.problem = ev.loadProblemFromFile(inputPath)
-        # TODO: eliminate self.problem.loads as args.
-        self.loadMatrix = self.calculate_load_matrix(self.problem.loads) # M
-        self.depotDistOut = self.calculate_depot_distances(self.problem.loads, depot_out=True) # Dout
-        self.depotDistBack = self.calculate_depot_distances(self.problem.loads, depot_out=False) # Dback
+        self.loadMatrix = self.calculate_load_matrix() # M
+        self.depotDistOut = self.calculate_depot_distances(depot_out=True) # Dout
+        self.depotDistBack = self.calculate_depot_distances(depot_out=False) # Dback
 
-    def calculate_load_matrix(self, loads):
+    def calculate_load_matrix(self):
         """Calculate a 'pseudo' distance matrix for loads."""
         # TODO: Can we do this greedily when reading file into problem?
-        n = len(loads)
+        n = len(self.problem.loads)
         load_matrix = np.zeros((n, n))
-
         for i in range(n):
             for j in range(n):
                 load_matrix[i, j] = ev.distanceBetweenPoints(self.problem.loads[i].dropoff, self.problem.loads[j].pickup)
         return load_matrix
 
-    def calculate_depot_distances(self, loads, depot_out=True):
+    def calculate_depot_distances(self, depot_out=True):
         """Calculate the distance matrix for loads to/from depot."""
-        n = len(loads)
+        n = len(self.problem.loads)
         dist_array = np.zeros(n)
-
         for i in range(n):
             if depot_out:
                 dist_array[i] = ev.distanceBetweenPoints(self.DEPOT, self.problem.loads[i].pickup)
@@ -70,7 +68,7 @@ class Solver():
 
     # Work In Progress
     def get_closest_load_id(self, M, load):
-        """ Closet load in load matrix, M, by load.id."""
+        """Closet load in load matrix, M, by load.id."""
         offset = load - 1
         min_distance = math.inf
         min_idx = None
@@ -81,9 +79,11 @@ class Solver():
                     min_idx = idx[0] + 1
         return min_idx
 
-    def get_brute_force_routes(self):
+    def get_brute_force_routes(self, seed=42):
         driver = 1
         schedule = []
+        random.seed(seed)
+        random.shuffle(self.problem.loads)
         for load in self.problem.loads:
             schedule.append(load)
             distance = self.get_route_distance(schedule)
