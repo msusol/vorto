@@ -11,7 +11,6 @@ if __name__ == '__main__':
     args=parser.parse_args()
 
     vrp = Solver(args.inputPath)
-    # TODO: Working through the algorithm for this approach.
     vrp.get_nearest_routes()
     schedules = vrp.get_schedules()
     print('Cost:', ev.getSolutionCost(vrp.problem, schedules)[0])
