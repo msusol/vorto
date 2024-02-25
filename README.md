@@ -34,22 +34,17 @@ total_cost = 500*number_of_drivers + total_number_of_driven_minutes
 A good program will produce a solution with a low total cost, but does not take too long to run
 (see Evaluation section below).
 
-**CVRPPD (Capacitated Vehicle Routing Problem with Pickup and Delivery)**
-
-Interesting Read: [A Hybrid Genetic Algorithm for Solving the VRP with Pickup and Delivery
-in Rural Areas](https://scholarspace.manoa.hawaii.edu/server/api/core/bitstreams/6e73b15f-13ae-489a-b8b9-3a4fcb9e57ba/content)
-
 ## Evaluate Training Problems
 
 ```bash
 $ python3 evaluateShared.py --cmd "python3 vrp.py --inputPath" --problemDir "TrainingProblems"
 ```
 
-| Approach                       | mean cost          | mean run time        |
-|--------------------------------|--------------------|----------------------|
-| get_brute_force_routes()       | 89996.4479968427   | 122.00418710708618ms |
-| get_brute_force_routes(seed=4) | 89750.38813192869  | 119.0253734588623ms  |
-| get_nearest_routes()           |                    |                      |
+| Approach                       | mean cost         | mean run time        |
+|--------------------------------|-------------------|----------------------|
+| get_brute_force_routes()       | 89996.4479968427  | 122.00418710708618ms |
+| get_brute_force_routes(seed=4) | 89750.38813192869 | 119.0253734588623ms  |
+| get_nearest_routes()           | 50732.27266613158 | 830.769407749176ms   |
 
 ### Demo
 
@@ -76,5 +71,22 @@ $ python3 vrp.py --inputPath "TestingProblems/demo.txt"
 
 ### Nearest Neighbor Heuristic
 
-TODO: Break from the manual brute force method, and load out the schedule by
-selecting the Nth nearest neighbor (load).
+Using the nearest neighbor heuristic approach, the algorithm follows:
+
+-   Add the closest load to the depot to a new driver as a route.
+-   Find the nearest load to the route's last dropoff point.
+    - If the load fits within route capacity, then add it on route. 
+    - Otherwise, create a new driver and add the next closest load to the depot
+- Now, iterate through all the driver routes again attempting to add the load.
+    - Repeat the process until all loads are scheduled on a route with a driver.
+
+References:
+1. [Constructive Heuristics for the Vehicle Routing Problem](https://allaboutalgorithms.com/constructive-heuristics-for-the-vehicle-routing-problem-3ffc5d713133)
+2. [Solving Vehicle Routing Problems with Python & Heuristics Algorithm](https://medium.com/@writingforara/solving-vehicle-routing-problems-with-python-heuristics-algorithm-2cc57fe7079c)
+
+## Future Considerations
+
+**CVRPPD (Capacitated Vehicle Routing Problem with Pickup and Delivery)**
+
+Interesting Read: [A Hybrid Genetic Algorithm for Solving the VRP with Pickup and Delivery
+in Rural Areas](https://scholarspace.manoa.hawaii.edu/server/api/core/bitstreams/6e73b15f-13ae-489a-b8b9-3a4fcb9e57ba/content)

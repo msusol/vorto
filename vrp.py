@@ -4,8 +4,6 @@ import argparse
 import math
 import numpy as np
 import random
-import sys
-from collections import defaultdict
 from typing import List
 
 import evaluateShared as ev
@@ -16,7 +14,7 @@ class Solver():
 
     def __init__(self, inputPath):
         self.inputPath = inputPath
-        self.routes = defaultdict(list)
+        self.routes = {}
         self.problem = ev.loadProblemFromFile(inputPath)
         self.loads_to_schedule = None
         self.distance_depot_out = None
@@ -98,11 +96,7 @@ class Solver():
                 if val < min_distance:
                     min_distance = val
                     min_idx = idx + 1
-        try:
-            return [load for load in self.loads_to_schedule if int(load.id) == min_idx][0]
-        except:
-            print('TODO: Resolve this issue on real training data.')
-            sys.exit(1)
+        return [load for load in self.loads_to_schedule if int(load.id) == min_idx][0]
 
     def remove_depot_out(self, load_id: str):
         return [t for t in self.distance_depot_out if t[0] != int(load_id)]
@@ -117,46 +111,44 @@ class Solver():
         self.loads_to_schedule = self.problem.loads.copy() # List[ev.Load]
         # Maintain load.id: k+1
         self.distance_depot_out = [(k+1,v) for k, v in enumerate(self.depotDistOut)]
-
-        self.routes = {}
-
         # Start with the closest load to the depot, assign to driver #1, remove from loads to schedule.
+        first_load = min(self.distance_depot_out, key = lambda t: t[1])  # TODO: Tuple
+        first_load_id = str(first_load[0])
+        #self.routes[driver].append(self.loads_to_schedule[first_load[0]])  # TODO: Make this a Load object
+        first_load = self.get_load(first_load_id)
         driver = 1
-        closest_load = min(self.distance_depot_out, key = lambda t: t[1])  # TODO: Tuple
-        closest_load_id = str(closest_load[0])
-        #self.routes[driver].append(self.loads_to_schedule[closest_load[0]])  # TODO: Make this a Load object
-        new_load = self.get_load(closest_load_id)
-
-        self.routes[driver] = []
-
-        self.routes[driver].append(new_load)  # TODO: Make this a Load object
-        self.distance_depot_out = self.remove_depot_out(new_load.id)
-        self.loads_to_schedule = self.remove_load(new_load.id)
+        self.routes[driver] = [first_load] # TODO: Make this a Load object
+        self.distance_depot_out = self.remove_depot_out(first_load.id)
+        self.loads_to_schedule = self.remove_load(first_load.id)
 
         while len(self.loads_to_schedule):
             # Now let's cycle through the driver routes and attempt to append the closest load
             # to the route, otherwise we find the next closest to depot and start with new driver.
-            for driver, route in self.routes.copy().items(): # RuntimeError: dictionary changed size during iteration
+            for dr, route in self.routes.copy().items(): # RuntimeError: dictionary changed size during iteration
                 # Get the closest load to route's last load drop off point.
                 last_load = route[-1]
                 nearest_load = self.get_closest_load(last_load.id)
                 # Get the round trip distance now with an additional load in route.
                 distance = self.get_route_distance(route + [nearest_load])
-                if distance > self.TIME_CONSTRAINT:
-                    # Find the next closest point from depot to start a new driver route.
-                    driver += 1
-                    closest_load = min(self.distance_depot_out, key = lambda t: t[1])
-                    closest_load_id = str(closest_load[0])
-                    new_load = self.get_load(closest_load_id)
-                    self.routes[driver] = []
-                    self.routes[driver].append(new_load)
-                    self.loads_to_schedule = self.remove_load(new_load.id)
-                    self.distance_depot_out = self.remove_depot_out(new_load.id)
-                else:
-                    new_load = self.get_load(nearest_load.id)
-                    self.routes[driver].append(new_load)
-                    self.loads_to_schedule = self.remove_load(new_load.id)
-                    self.distance_depot_out = self.remove_depot_out(new_load.id)
+                if distance <= self.TIME_CONSTRAINT:
+                    nearest_load = self.get_load(nearest_load.id)
+                    self.routes[dr].append(nearest_load)
+                    self.loads_to_schedule = self.remove_load(nearest_load.id)
+                    self.distance_depot_out = self.remove_depot_out(nearest_load.id)
+                if not len(self.loads_to_schedule):
+                    break
+
+            # Have we scheduled all the loads in the last loop?
+            if len(self.loads_to_schedule):
+                # Find the next closest point from depot to start a new driver route.
+                closest_load = min(self.distance_depot_out, key = lambda t: t[1])
+                closest_load_id = str(closest_load[0])
+                closest_load = self.get_load(closest_load_id)
+                driver += 1 # = max(self.routes.keys()) + 1
+                self.routes[driver] = []
+                self.routes[driver].append(closest_load)
+                self.loads_to_schedule = self.remove_load(closest_load.id)
+                self.distance_depot_out = self.remove_depot_out(closest_load.id)
 
     def get_schedules(self):
         schedules = []
