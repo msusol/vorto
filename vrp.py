@@ -4,6 +4,7 @@ import argparse
 import math
 import numpy as np
 import random
+import sys
 from collections import defaultdict
 from typing import List
 
@@ -98,10 +99,10 @@ class Solver():
                     min_distance = val
                     min_idx = idx + 1
         try:
-            [load for load in self.loads_to_schedule if int(load.id) == min_idx][0]
+            return [load for load in self.loads_to_schedule if int(load.id) == min_idx][0]
         except:
             print('TODO: Resolve this issue on real training data.')
-        return [load for load in self.loads_to_schedule if int(load.id) == min_idx][0]
+            sys.exit(1)
 
     def remove_depot_out(self, load_id: str):
         return [t for t in self.distance_depot_out if t[0] != int(load_id)]
